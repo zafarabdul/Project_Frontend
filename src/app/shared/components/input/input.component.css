@@ -1,0 +1,92 @@
+:host {
+    display: block;
+    width: 100%;
+    margin-bottom: 1.25rem;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-muted, #94a3b8);
+    font-weight: 500;
+}
+
+.label-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.input-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--text-muted, #94a3b8);
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.input-action {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted, #94a3b8);
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.input-action ::ng-deep button,
+.input-action ::ng-deep a {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+}
+
+.input-control {
+    width: 100%;
+    background: var(--bg-dark, #0f172a);
+    border: 1px solid var(--border-color, #334155);
+    color: var(--text-main, #f8fafc);
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.has-icon {
+    padding-left: 2.5rem;
+}
+
+.input-control:focus {
+    border-color: var(--accent-blue, #0ea5e9);
+}
+
+.input-control:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

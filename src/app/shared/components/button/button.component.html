@@ -1,0 +1,7 @@
+<button [type]="type" class="btn" [class.btn-primary]="variant === 'primary'"
+    [class.btn-secondary]="variant === 'secondary'" [class.btn-outline]="variant === 'outline'"
+    [disabled]="disabled || loading" (click)="handleClick($event)">
+
+    <span *ngIf="loading" class="spinner"></span>
+    <ng-content></ng-content>
+</button>

@@ -31,68 +31,51 @@
         </div>
 
         <div class="console-body">
-            <div class="form-group">
-                <div class="label-row">
-                    <label>SECURITY CLEARANCE ID</label>
-                    <span class="format-hint">Format: XXXX-XXXX-XXXX-XXXX</span>
-                </div>
-                <input type="text" [(ngModel)]="securityId" placeholder="Enter ID">
-            </div>
 
-            <div class="form-group">
-                <div class="input-wrapper">
-                    <span class="input-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4">
-                            </path>
-                        </svg>
-                    </span>
-                    <input type="password" [(ngModel)]="decryptionKey" class="has-icon"
-                        placeholder="Enter 16-digit unique key...">
-                    <span class="input-action-right">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
-                    </span>
-                </div>
-            </div>
+            <app-input label="SECURITY CLEARANCE ID" placeholder="Enter ID" [(ngModel)]="securityId"
+                (ngModelChange)="onCredentialsChange()">
+            </app-input>
+            <div class="format-hint"
+                style="text-align: right; margin-top: -0.75rem; margin-bottom: 1.5rem; font-size: 0.75rem; color: #475569; position: relative; z-index: 1;">
+                Format: XXXX-XXXX-XXXX-XXXX</div>
+
+            <app-input label="16-DIGIT UNIQUE KEY" type="password" placeholder="Enter 16-digit unique key..."
+                [(ngModel)]="decryptionKey" (ngModelChange)="onCredentialsChange()" [hasIcon]="true">
+                <svg icon xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4">
+                    </path>
+                </svg>
+            </app-input>
 
             <div class="form-group">
                 <div class="label-row">
                     <label>ENCRYPTED PAYLOAD</label>
-                    <a class="action-link file-action">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="12" y1="18" x2="12" y2="12"></line>
-                            <line x1="9" y1="15" x2="12" y2="12"></line>
-                            <line x1="15" y1="15" x2="12" y2="12"></line>
-                        </svg>
-                        LOAD FROM FILE
-                    </a>
+                    <span *ngIf="isLoadingPayload"
+                        style="color: #0ea5e9; font-size: 0.75rem; display: flex; align-items: center; gap: 5px;">
+                        <span class="spinner" style="width: 12px; height: 12px; border-width: 1px;"></span>
+                        FETCHING DATA...
+                    </span>
                 </div>
                 <div class="textarea-wrapper">
                     <span class="bracket-icon">{{ '{' }} {{ '}' }}</span>
 
-                    <textarea [(ngModel)]="encryptedPayload"
-                        placeholder="Paste base64 encoded string or hex dump here..."></textarea>
+                    <textarea [value]="encryptedPayload" readonly
+                        [placeholder]="isLoadingPayload ? 'Accessing Secure Database...' : 'Payload will automatically load when valid credentials are provided...'"
+                        style="cursor: default; opacity: 0.9; border-color: #334155;"></textarea>
                 </div>
             </div>
 
-            <button class="btn-decrypt" (click)="initiateDecryption()" [disabled]="isDecrypting">
+            <app-button variant="primary" (click)="initiateDecryption()" [loading]="isDecrypting"
+                [disabled]="isDecrypting || !encryptedPayload">
                 <svg *ngIf="!isDecrypting" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
                     fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
-                <span *ngIf="isDecrypting" class="spinner"></span>
                 {{ isDecrypting ? 'DECRYPTING...' : 'INITIATE DECRYPTION' }}
-            </button>
+            </app-button>
         </div>
 
         <div class="console-footer">
@@ -119,3 +102,14 @@
     </div>
 
 </div>
+<style>
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>

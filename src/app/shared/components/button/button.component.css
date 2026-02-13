@@ -1,0 +1,65 @@
+:host {
+    display: inline-block;
+}
+
+.btn {
+    border-radius: 6px;
+    padding: 0.85rem 1.5rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    transition: opacity 0.2s, background-color 0.2s, color 0.2s, border-color 0.2s;
+    width: 100%;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    color: white;
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border-color, #334155);
+    color: var(--text-main, #f8fafc);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--border-color, #334155);
+    color: var(--text-main, #f8fafc);
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    /* Use current text color */
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

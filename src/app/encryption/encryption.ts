@@ -2,11 +2,14 @@ import { Component, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CardComponent } from '../shared/components/card/card.component';
+import { InputComponent } from '../shared/components/input/input.component';
+import { ButtonComponent } from '../shared/components/button/button.component';
 
 @Component({
   selector: 'app-encryption',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CardComponent, InputComponent, ButtonComponent],
   templateUrl: './encryption.html',
   styleUrl: './encryption.css'
 })

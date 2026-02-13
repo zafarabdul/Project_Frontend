@@ -7,8 +7,8 @@
 
     <div class="grid">
         <!-- Left Column: Input -->
-        <div class="card">
-            <div class="card-header">
+        <app-card>
+            <div header>
                 <span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                         stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -20,46 +20,33 @@
                 </span>
             </div>
 
-            <div class="form-group">
-                <label>Special ID</label>
-                <div class="input-wrapper">
-                    <span class="input-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                    </span>
-                    <input type="text" [(ngModel)]="specialId" class="has-icon" placeholder="USER-ID">
-                </div>
-            </div>
+            <app-input label="Special ID" placeholder="USER-ID" [(ngModel)]="specialId" [hasIcon]="true">
+                <svg icon xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </app-input>
 
-            <div class="form-group">
-                <div class="label-header">
-                    <label>Encryption Key</label>
-                    <a class="action-link" (click)="generateKey()">Generate Random</a>
-                </div>
-                <div class="input-wrapper">
-                    <span class="input-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4">
-                            </path>
-                        </svg>
-                    </span>
-                    <input type="password" [(ngModel)]="encryptionKey" class="has-icon" placeholder="Enter secure key">
-                    <button class="input-action">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
-                            </path>
-                            <line x1="1" y1="1" x2="23" y2="23"></line>
-                        </svg>
-                    </button>
-                </div>
-            </div>
+            <app-input label="Encryption Key" placeholder="Enter secure key" type="password" [(ngModel)]="encryptionKey"
+                [hasIcon]="true" [hasRightAction]="true" actionLabel="Generate Random" (actionClick)="generateKey()">
+                <svg icon xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4">
+                    </path>
+                </svg>
+
+                <button right-action>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                        </path>
+                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                </button>
+            </app-input>
 
             <div class="form-group">
                 <label>Algorithm</label>
@@ -131,26 +118,25 @@
             </div>
 
             <div class="btn-group">
-                <button class="btn btn-primary" (click)="lockAndEncrypt()" [disabled]="isLoading">
+                <app-button variant="primary" style="flex: 3" (click)="lockAndEncrypt()" [loading]="isLoading"
+                    [disabled]="isLoading">
                     <svg *ngIf="!isLoading" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
                         stroke-linejoin="round">
                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                     </svg>
-                    <span *ngIf="isLoading"
-                        style="width: 16px; height: 16px; border: 2px solid #fff; border-bottom-color: transparent; border-radius: 50%; display: inline-block; animation: spin 1s linear infinite; margin-right: 5px;"></span>
                     {{ isLoading ? 'ENCRYPTING...' : 'LOCK & ENCRYPT' }}
-                </button>
-                <button class="btn btn-secondary" (click)="clear()">
+                </app-button>
+                <app-button variant="secondary" style="flex: 1" (click)="clear()">
                     Clear
-                </button>
+                </app-button>
             </div>
-        </div>
+        </app-card>
 
         <!-- Right Column: Output -->
-        <div class="card">
-            <div class="card-header">
+        <app-card>
+            <div header>
                 <span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                         stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -206,15 +192,15 @@
                 </div>
 
                 <div class="btn-group">
-                    <button class="btn btn-outline" (click)="copyResult()">
+                    <app-button variant="outline" (click)="copyResult()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                         </svg>
                         Copy Result
-                    </button>
-                    <button class="btn btn-outline" (click)="downloadTxt()">
+                    </app-button>
+                    <app-button variant="outline" (click)="downloadTxt()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -222,10 +208,10 @@
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
                         Download .txt
-                    </button>
+                    </app-button>
                 </div>
             </div>
-        </div>
+        </app-card>
     </div>
     <style>
         @keyframes spin {
@@ -238,3 +224,4 @@
             }
         }
     </style>
+</div>

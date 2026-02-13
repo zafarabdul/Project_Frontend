@@ -1,0 +1,21 @@
+<div class="form-group">
+    <div class="label-header" *ngIf="label || actionLabel">
+        <label *ngIf="label">{{ label }}</label>
+        <a class="action-link" *ngIf="actionLabel" (click)="onAction()">{{ actionLabel }}</a>
+    </div>
+
+    <div class="input-wrapper">
+        <!-- Icon Slot -->
+        <span class="input-icon" *ngIf="hasIcon">
+            <ng-content select="[icon]"></ng-content>
+        </span>
+
+        <input [type]="type" [class.has-icon]="hasIcon" [placeholder]="placeholder" [value]="value"
+            [disabled]="disabled" (input)="onInput($event)" (blur)="onTouched()" class="input-control" />
+
+        <!-- Right Action Slot (like Generate, or Show Password) -->
+        <div class="input-action" *ngIf="hasRightAction">
+            <ng-content select="[right-action]"></ng-content>
+        </div>
+    </div>
+</div>
