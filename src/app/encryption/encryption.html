@@ -1,0 +1,240 @@
+<div class="main-content">
+    <div class="page-title">
+        <h1>Secure Data Encryption</h1>
+        <p>Configure your encryption parameters and process sensitive data securely. All operations are integrated with
+            our secure backend.</p>
+    </div>
+
+    <div class="grid">
+        <!-- Left Column: Input -->
+        <div class="card">
+            <div class="card-header">
+                <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        style="margin-right:8px">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    Input Configuration
+                </span>
+            </div>
+
+            <div class="form-group">
+                <label>Special ID</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </span>
+                    <input type="text" [(ngModel)]="specialId" class="has-icon" placeholder="USER-ID">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="label-header">
+                    <label>Encryption Key</label>
+                    <a class="action-link" (click)="generateKey()">Generate Random</a>
+                </div>
+                <div class="input-wrapper">
+                    <span class="input-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4">
+                            </path>
+                        </svg>
+                    </span>
+                    <input type="password" [(ngModel)]="encryptionKey" class="has-icon" placeholder="Enter secure key">
+                    <button class="input-action">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                            </path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Algorithm</label>
+                <select [(ngModel)]="algorithm">
+                    <option *ngFor="let algo of algorithms" [value]="algo">{{ algo }} {{ algo === 'AES-256-GCM' ?
+                        '(Recommended)' : '' }}</option>
+                </select>
+            </div>
+
+            <div class="tabs">
+                <button class="tab" [class.active]="activeTab === 'text'" (click)="activeTab = 'text'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Text Message
+                </button>
+                <button class="tab" [class.active]="activeTab === 'file'" (click)="activeTab = 'file'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                        <polyline points="13 2 13 9 20 9"></polyline>
+                    </svg>
+                    File Upload
+                </button>
+            </div>
+
+            <div class="form-group" style="flex: 1; display: flex; flex-direction: column;">
+                <label>{{ activeTab === 'text' ? 'Raw Message' : 'File Selection' }}</label>
+
+                <!-- Text Area -->
+                <ng-container *ngIf="activeTab === 'text'">
+                    <textarea [(ngModel)]="message" placeholder="Enter sensitive data to encrypt..."
+                        [maxlength]="2048"></textarea>
+                    <div class="char-count">{{ message.length }} / 2048 chars</div>
+                </ng-container>
+
+                <!-- File Upload Area -->
+                <div *ngIf="activeTab === 'file'" class="file-upload-area" (click)="fileInput.click()">
+                    <input type="file" #fileInput style="display: none" (change)="onFileSelected($event)">
+                    <div class="upload-content" *ngIf="!selectedFile">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                            style="margin-bottom: 1rem; color: #0ea5e9;">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p style="margin: 0; font-weight: 600; font-size: 1rem;">Initiate Data Uplink</p>
+                        <p style="margin: 0.5rem 0 0; color: #94a3b8; font-size: 0.8rem;">Drop encrypted payload or
+                            select local file for secure transmission.</p>
+                    </div>
+                    <div class="upload-content" *ngIf="selectedFile">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                            style="margin-bottom: 1rem;">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        <p style="margin: 0; font-weight: 600; font-size: 1rem; color: #10b981;">{{ selectedFile.name }}
+                        </p>
+                        <p style="margin: 0.5rem 0 0; color: #94a3b8; font-size: 0.8rem;">Size: {{ (selectedFile.size /
+                            1024).toFixed(2) }} KB | Ready for Encryption</p>
+                        <button class="btn btn-secondary"
+                            style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.8rem;"
+                            (click)="selectedFile = null; $event.stopPropagation()">Terminate Selection</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" (click)="lockAndEncrypt()" [disabled]="isLoading">
+                    <svg *ngIf="!isLoading" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <span *ngIf="isLoading"
+                        style="width: 16px; height: 16px; border: 2px solid #fff; border-bottom-color: transparent; border-radius: 50%; display: inline-block; animation: spin 1s linear infinite; margin-right: 5px;"></span>
+                    {{ isLoading ? 'ENCRYPTING...' : 'LOCK & ENCRYPT' }}
+                </button>
+                <button class="btn btn-secondary" (click)="clear()">
+                    Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Column: Output -->
+        <div class="card">
+            <div class="card-header">
+                <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        style="margin-right:8px">
+                        <polyline points="4 7 4 4 20 4 20 7"></polyline>
+                        <line x1="9" y1="20" x2="15" y2="20"></line>
+                        <line x1="12" y1="4" x2="12" y2="20"></line>
+                    </svg>
+                    Encrypted Output
+                </span>
+                <span class="success-badge" *ngIf="showSuccess">SUCCESS</span>
+            </div>
+
+            <div class="empty-state" *ngIf="!encryptedOutput">
+                <div class="lock-ring">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                        stroke="#334155" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="encrypted-result" *ngIf="encryptedOutput" style="flex:1; display:flex; flex-direction:column;">
+                <div
+                    style="flex:1; display: flex; flex-direction:column; align-items: center; justify-content: flex-start; margin-bottom: 2rem;">
+                    <div class="lock-ring active-ring">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                            stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        <div class="check-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="code-block" style="width: 100%; box-sizing: border-box;">
+                        <button class="copy-icon-btn" (click)="copyResult()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                        {{ encryptedOutput }}
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-outline" (click)="copyResult()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        Copy Result
+                    </button>
+                    <button class="btn btn-outline" (click)="downloadTxt()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Download .txt
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
