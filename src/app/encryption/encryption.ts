@@ -1,10 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CardComponent } from '../shared/components/card/card.component';
 import { InputComponent } from '../shared/components/input/input.component';
 import { ButtonComponent } from '../shared/components/button/button.component';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-encryption',
@@ -33,9 +34,10 @@ export class EncryptionComponent {
   }
 
   // State
-  isLoading: boolean = false;
+  isLoading = signal(false);
   encryptedOutput: string | null = null;
   showSuccess: boolean = false;
+  error: string | null = null;
 
   // Options
   algorithms = [
@@ -53,14 +55,15 @@ export class EncryptionComponent {
   }
 
   lockAndEncrypt() {
-    if (!this.specialId || !this.encryptionKey || !this.message) {
-      alert('Please fill in all required fields.');
-      return;
-    }
+    // if (!this.specialId || !this.encryptionKey || !this.message) {
+    //   alert('Please fill in all required fields.');
+    //   return;
+    // }
 
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.showSuccess = false;
     this.encryptedOutput = null;
+    this.error = null;
 
     this.registerUser().subscribe({
       next: () => {
@@ -68,7 +71,9 @@ export class EncryptionComponent {
       },
       error: (err) => {
         console.error('Registration failed', err);
-        this.sendDataEntry();
+        // Only stop if registration error
+        this.isLoading.set(false);
+        this.showError('Registration failed. Check console.');
       }
     });
   }
@@ -78,6 +83,14 @@ export class EncryptionComponent {
     return this.http.post(`/api/data/register/${this.specialId}/${dummyEmail}/`, {});
   }
 
+  private showError(msg: string) {
+    this.error = msg;
+    // Auto-clear after 5 seconds
+    setTimeout(() => {
+      this.error = null;
+    }, 5000);
+  }
+
   private sendDataEntry() {
     const payload = {
       message: this.message,
@@ -85,18 +98,20 @@ export class EncryptionComponent {
 
     const url = `/api/data/${this.specialId}/${this.encryptionKey}/${this.algorithm}/message/`;
 
-    this.http.post(url, payload).subscribe({
-      next: (response: any) => {
-        this.isLoading = false;
-        this.showSuccess = true;
-        this.encryptedOutput = this.mockEncrypt(this.message, this.encryptionKey);
-      },
-      error: (err) => {
-        console.error('Encryption failed', err);
-        this.isLoading = false;
-        alert('Encryption request failed. Check console.');
-      }
-    });
+    this.http.post(url, payload)
+      .pipe(finalize(() => {
+        this.isLoading.set(false);
+      }))
+      .subscribe({
+        next: (response: any) => {
+          this.showSuccess = true;
+          this.encryptedOutput = this.mockEncrypt(this.message, this.encryptionKey);
+        },
+        error: (err) => {
+          console.error('Encryption failed', err);
+          this.showError('Encryption request failed. Check console.');
+        }
+      });
   }
 
   private mockEncrypt(text: string, key: string): string {
@@ -112,7 +127,7 @@ export class EncryptionComponent {
   copyResult() {
     if (this.encryptedOutput) {
       navigator.clipboard.writeText(this.encryptedOutput);
-      alert('Copied to clipboard!');
+      this.showError('Copied to clipboard!');
     }
   }
 

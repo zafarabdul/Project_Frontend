@@ -24,6 +24,16 @@ export class InputComponent implements ControlValueAccessor {
     @Input() hasIcon: boolean = false;
     @Input() hasRightAction: boolean = false;
 
+    activeType: string = 'text';
+
+    ngOnChanges() {
+        this.activeType = this.type;
+    }
+
+    togglePasswordVisibility() {
+        this.activeType = this.activeType === 'password' ? 'text' : 'password';
+    }
+
     @Output() actionClick = new EventEmitter<void>();
 
     value: string = '';

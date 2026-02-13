@@ -81,4 +81,10 @@ export class DecryptionComponent {
       this.isDecrypting = false;
     }, 1500);
   }
+
+  copyPayload() {
+    if (this.encryptedPayload) {
+      navigator.clipboard.writeText(this.encryptedPayload);
+    }
+  }
 }

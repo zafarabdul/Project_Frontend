@@ -1,15 +1,12 @@
 :host {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    min-height: calc(100vh - 80px);
-    /* Adjusted for header */
-    max-width: 1200px;
+    flex: 1;
+    max-width: 1400px;
     margin: 0 auto;
-    font-family: 'Inter', sans-serif;
-    color: #f8fafc;
-    position: relative;
+    width: 100%;
 }
 
 /* Background Effect */
@@ -75,7 +72,7 @@
 
 .console-card {
     width: 100%;
-    max-width: 800px;
+    max-width: 900px;
     background: #162032;
     /* Solid dark background */
     border: 1px solid #1e293b;
@@ -103,7 +100,8 @@
 
 .console-header {
     background: #1e293b;
-    padding: 1.5rem 2rem;
+    padding: 1rem 1.5rem;
+    /* Reduced header padding */
     border-bottom: 1px solid #334155;
     border-left: 4px solid #0ea5e9;
     display: flex;
@@ -121,12 +119,13 @@
 }
 
 .console-body {
-    padding: 2.5rem 3rem;
-    /* More generous padding */
+    padding: 1.5rem 2rem;
+    /* Reduced from 2.5rem 3rem */
 }
 
 .form-group {
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
+    /* Reduced from 2rem */
 }
 
 .label-row {
@@ -225,16 +224,16 @@ textarea {
     width: 100%;
     background: #0f172a;
     border: 1px solid #334155;
-    padding: 1.25rem 1.25rem 1.25rem 3.5rem;
+    padding: 1rem 1rem 1rem 3.5rem;
     color: #f1f5f9;
     border-radius: 8px;
     font-family: 'Monaco', 'Courier New', monospace;
     font-size: 0.9rem;
-    min-height: 160px;
+    min-height: 100px;
     resize: vertical;
     outline: none;
     box-sizing: border-box;
-    line-height: 1.6;
+    line-height: 1.5;
     transition: all 0.2s;
 }
 
