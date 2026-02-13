@@ -54,7 +54,7 @@ export class DecryptionComponent {
 
   initiateDecryption() {
     if (!this.decryptionKey || !this.encryptedPayload) {
-      alert("Please provide key and payload");
+      // Please provide key and payload
       return;
     }
 
