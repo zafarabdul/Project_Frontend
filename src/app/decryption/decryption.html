@@ -32,15 +32,15 @@
 
         <div class="console-body">
 
-            <app-input label="SECURITY CLEARANCE ID" placeholder="Enter ID" [(ngModel)]="securityId"
-                (ngModelChange)="onCredentialsChange()">
+            <app-input label="SECURITY CLEARANCE ID" placeholder="Enter ID" [ngModel]="securityId()"
+                (ngModelChange)="securityId.set($event);">
             </app-input>
             <div class="format-hint"
                 style="text-align: right; margin-top: -0.75rem; margin-bottom: 1.5rem; font-size: 0.75rem; color: #475569; position: relative; z-index: 1;">
                 Format: XXXX-XXXX-XXXX-XXXX</div>
 
             <app-input label="16-DIGIT UNIQUE KEY" type="password" placeholder="Enter 16-digit unique key..."
-                [(ngModel)]="decryptionKey" (ngModelChange)="onCredentialsChange()" [hasIcon]="true">
+                [ngModel]="decryptionKey()" (ngModelChange)="decryptionKey.set($event)" [hasIcon]="true">
                 <svg icon xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path
@@ -49,15 +49,20 @@
                 </svg>
             </app-input>
 
+
+            <app-input label="DECRYPTION ALGORITHM" placeholder="AES-256-GCM" [ngModel]="algorithm()"
+                (ngModelChange)="algorithm.set($event)">
+            </app-input>
+
             <div class="form-group">
                 <div class="label-row">
                     <label>ENCRYPTED PAYLOAD</label>
-                    <span *ngIf="isLoadingPayload"
+                    <span *ngIf="isLoadingPayload()"
                         style="color: #0ea5e9; font-size: 0.75rem; display: flex; align-items: center; gap: 5px; margin-left: auto;">
                         <span class="spinner" style="width: 12px; height: 12px; border-width: 1px;"></span>
                         FETCHING DATA...
                     </span>
-                    <a *ngIf="!isLoadingPayload && encryptedPayload" (click)="copyPayload()" class="action-link"
+                    <a *ngIf="!isLoadingPayload() && encryptedPayload()" (click)="copyPayload()" class="action-link"
                         style="margin-left: auto;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -70,20 +75,21 @@
                 <div class="textarea-wrapper">
                     <span class="bracket-icon">{{ '{' }} {{ '}' }}</span>
 
-                    <textarea [value]="encryptedPayload" readonly
-                        [placeholder]="isLoadingPayload ? 'Accessing Secure Database...' : 'Payload will automatically load when valid credentials are provided...'"
+                    <textarea [value]="encryptedPayload()" readonly
+                        [placeholder]="isLoadingPayload() ? 'Accessing Secure Database...' : 'Payload will automatically load when valid credentials are provided...'"
                         style="cursor: default; opacity: 0.9; border-color: #334155;"></textarea>
                 </div>
             </div>
 
-            <app-button variant="primary" (click)="initiateDecryption()" [loading]="isDecrypting"
-                [disabled]="isDecrypting || !encryptedPayload">
-                <svg *ngIf="!isDecrypting" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <app-button variant="primary" (click)="initiateDecryption(); onCredentialsChange()"
+                [loading]="isDecrypting()" [disabled]="isDecrypting()">
+                <svg *ngIf="!isDecrypting()" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                    stroke-linejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
-                {{ isDecrypting ? 'DECRYPTING...' : 'INITIATE DECRYPTION' }}
+                {{ isDecrypting() ? 'DECRYPTING...' : 'INITIATE DECRYPTION' }}
             </app-button>
         </div>
 
@@ -92,7 +98,7 @@
                 <span class="indicator"></span> AES-256 GCM
             </div>
             <div class="footer-item">
-                <span class="indicator-time"></span> 24ms Latency
+                <span class="indicator-time"></span> 12ms Latency
             </div>
             <div class="footer-item ml-auto">
                 SESSION ID: <span style="font-family:monospace">8F3A-9C2B-1E4D</span>
@@ -100,16 +106,8 @@
         </div>
     </div>
 
-    <div class="status-bar" *ngIf="!decryptedOutput">
-        <div class="info-icon">i</div>
-        <span>Ready to process. Output will appear here upon successful validation.</span>
-    </div>
-
-    <div class="status-bar success" *ngIf="decryptedOutput">
-        <div class="info-icon check">✓</div>
-        <span>Decryption Successful: {{ decryptedOutput }}</span>
-    </div>
-
+    <!-- Shared Toast Notification -->
+    <app-toast [show]="showToast()" [message]="toastMessage()" [type]="toastType()"></app-toast>
 </div>
 <style>
     @keyframes spin {

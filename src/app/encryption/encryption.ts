@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { ApiService } from '../shared/services/api';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CardComponent } from '../shared/components/card/card.component';
@@ -16,6 +17,7 @@ import { finalize } from 'rxjs/operators';
 })
 export class EncryptionComponent {
   title = 'Encryption Panel v2.0';
+  private api = inject(ApiService);
   private http = inject(HttpClient);
 
   // Form Model
@@ -65,22 +67,22 @@ export class EncryptionComponent {
     this.encryptedOutput = null;
     this.error = null;
 
-    this.registerUser().subscribe({
-      next: () => {
-        this.sendDataEntry();
-      },
-      error: (err) => {
-        console.error('Registration failed', err);
-        // Only stop if registration error
-        this.isLoading.set(false);
-        this.showError('Registration failed. Check console.');
-      }
-    });
+    this.sendDataEntry();
+    // this.registerUser().subscribe({
+    //   next: () => {
+    //   },
+    //   error: (err) => {
+    //     console.error('Registration failed', err);
+    //     // Only stop if registration error
+    //     this.isLoading.set(false);
+    //     this.showError('Registration failed. Check console.');
+    //   }
+    // });
   }
 
   private registerUser() {
     const dummyEmail = `${this.specialId.toLowerCase()}@gmail.com`;
-    return this.http.post(`/api/data/register/${this.specialId}/${dummyEmail}/`, {});
+    return this.api.registerUser(this.specialId, dummyEmail);
   }
 
   private showError(msg: string) {
@@ -96,9 +98,7 @@ export class EncryptionComponent {
       message: this.message,
     };
 
-    const url = `/api/data/${this.specialId}/${this.encryptionKey}/${this.algorithm}/message/`;
-
-    this.http.post(url, payload)
+    this.api.sendDataEntry(this.specialId, this.encryptionKey, this.algorithm, payload)
       .pipe(finalize(() => {
         this.isLoading.set(false);
       }))

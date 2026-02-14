@@ -1,0 +1,6 @@
+<div class="toast-notification" [class.show]="show" [class.error]="type === 'error'">
+    <div class="check-circle" [class.error-circle]="type === 'error'">
+        {{ type === 'success' ? '✓' : '!' }}
+    </div>
+    <span>{{ message }}</span>
+</div>
