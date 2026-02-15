@@ -20,4 +20,8 @@ export class ApiService {
   fetchEncryptedPayload(securityId: string, key: string, algo: string): Observable<any> {
     return this.http.get(`${this.BASE_URL}/${securityId}/${key}/${algo}/message/`);
   }
+
+  fetchEncryptedPhoto(securityId: string, key: string): Observable<Blob> {
+    return this.http.get(`${this.BASE_URL}/${securityId}/${key}/photo/`, { responseType: 'blob' });
+  }
 }

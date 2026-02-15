@@ -42,45 +42,80 @@ export class DecryptionComponent {
   }
 
   timeout: any;
+  photoUrl = signal<string | null>(null);
+
   fetchEncryptedPayload() {
     this.isLoadingPayload.set(true);
     this.encryptedPayload.set(''); // Reset
+    this.photoUrl.set(null); // Reset photo
 
     if (this.timeout) {
       clearTimeout(this.timeout);
       this.timeout = null;
     }
     this.timeout = setTimeout(() => {
+      // 1. Try fetching text message
       this.api.fetchEncryptedPayload(this.securityId(), this.decryptionKey(), this.algorithm()).subscribe({
         next: (response: any) => {
-          // If response has message, use it. If not, try encrypted_data. 
-          // If neither, fallback to stringifying the whole response so user sees WHAT came back.
           if (response && typeof response === 'object') {
             const payload = response.message || response.encrypted_data || JSON.stringify(response);
             this.encryptedPayload.set(payload);
-
             if (response.algoId && this.algorithms.includes(response.algoId)) {
               this.algorithm.set(response.algoId);
             }
+            this.showNotification('Message Fetched Successfully', 'success');
           } else {
-            // If response is just a string or unknown
             this.encryptedPayload.set(String(response));
+            this.showNotification('Message Fetched Successfully', 'success');
           }
-
           this.isLoadingPayload.set(false);
-          this.showNotification('Data Fetched Successfully', 'success');
         },
         error: (err: any) => {
-          console.error('Failed to fetch payload', err);
-          // Show the actual error message or status text in the payload box
-          const errorMsg = err.error?.message || err.statusText || "Unknown Error";
-          this.encryptedPayload.set(`Error: ${errorMsg} (Status: ${err.status})`);
-          this.isLoadingPayload.set(false);
-          this.showNotification(`Fetch Failed: ${errorMsg}`, 'error');
+          // If text fetch fails, try fetching photo
+          this.fetchPhoto();
         }
       });
     }, 1000);
+  }
 
+  fetchPhoto() {
+    this.api.fetchEncryptedPhoto(this.securityId(), this.decryptionKey()).subscribe({
+      next: (blob: Blob) => {
+        if (blob.size > 0 && blob.type.startsWith('image/')) {
+          const url = URL.createObjectURL(blob);
+          this.photoUrl.set(url);
+          this.encryptedPayload.set('Image data received');
+          this.showNotification('Photo Fetched Successfully', 'success');
+        } else {
+          this.handleFetchError('No valid text or photo found');
+        }
+        this.isLoadingPayload.set(false);
+      },
+      error: (err) => {
+        // Both failed
+        this.handleFetchError(err.error?.message || err.statusText || 'Unknown Error', err.status);
+        this.isLoadingPayload.set(false);
+      }
+    });
+  }
+
+  handleFetchError(msg: string, status?: any) {
+    const errorText = `Error: ${msg} ${status ? '(Status: ' + status + ')' : ''}`;
+    this.encryptedPayload.set(errorText);
+    this.showNotification(`Fetch Failed: ${msg}`, 'error');
+  }
+
+  copyPayload() {
+    if (this.encryptedPayload() && !this.photoUrl()) {
+      // ... existing copy logic
+      navigator.clipboard.writeText(this.encryptedPayload())
+        .then(() => {
+          this.showNotification('Encrypted Payload Copied to Clipboard!', 'success');
+        })
+        .catch(() => {
+          this.showNotification('Failed to copy to clipboard', 'error');
+        });
+    }
   }
 
   initiateDecryption() {
@@ -114,17 +149,7 @@ export class DecryptionComponent {
     setTimeout(() => this.showToast.set(false), 3000);
   }
 
-  copyPayload() {
-    if (this.encryptedPayload()) {
-      navigator.clipboard.writeText(this.encryptedPayload())
-        .then(() => {
-          this.showNotification('Encrypted Payload Copied to Clipboard!', 'success');
-        })
-        .catch(() => {
-          this.showNotification('Failed to copy to clipboard', 'error');
-        });
-    }
-  }
+
 }
 
 

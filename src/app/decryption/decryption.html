@@ -75,7 +75,13 @@
                 <div class="textarea-wrapper">
                     <span class="bracket-icon">{{ '{' }} {{ '}' }}</span>
 
-                    <textarea [value]="encryptedPayload()" readonly
+                    <div *ngIf="photoUrl()" class="photo-container"
+                        style="display: flex; justify-content: center; padding: 1rem;">
+                        <img [src]="photoUrl()" alt="Decrypted Content"
+                            style="max-width: 100%; max-height: 300px; border-radius: 4px; border: 1px solid #334155;">
+                    </div>
+
+                    <textarea *ngIf="!photoUrl()" [value]="encryptedPayload()" readonly
                         [placeholder]="isLoadingPayload() ? 'Accessing Secure Database...' : 'Payload will automatically load when valid credentials are provided...'"
                         style="cursor: default; opacity: 0.9; border-color: #334155;"></textarea>
                 </div>
