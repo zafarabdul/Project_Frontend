@@ -24,4 +24,7 @@ export class ApiService {
   fetchEncryptedPhoto(securityId: string, key: string): Observable<Blob> {
     return this.http.get(`${this.BASE_URL}/${securityId}/${key}/photo/`, { responseType: 'blob' });
   }
+  uploadEncryptedPhoto(specialId: string, key: string, algo: string, formData: FormData): Observable<any> {
+    return this.http.post(`${this.BASE_URL}/${specialId}/${key}/photo/`, formData);
+  }
 }

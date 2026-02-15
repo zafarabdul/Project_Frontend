@@ -96,10 +96,6 @@ export class EncryptionComponent {
   }
 
   private sendDataEntry() {
-    const payload = {
-      message: this.message,
-    };
-
     let algo = this.algorithm;
     if (this.algorithm === 'NewAlgo') {
       if (!this.customAlgorithm) {
@@ -110,20 +106,53 @@ export class EncryptionComponent {
       algo = this.customAlgorithm;
     }
 
-    this.api.sendDataEntry(this.specialId, this.encryptionKey, algo, payload)
-      .pipe(finalize(() => {
+    if (this.activeTab === 'file') {
+      if (!this.selectedFile) {
+        this.showError('Please select a file to encrypt.');
         this.isLoading.set(false);
-      }))
-      .subscribe({
-        next: (response: any) => {
-          this.showSuccess = true;
-          this.encryptedOutput = this.mockEncrypt(this.message, this.encryptionKey);
-        },
-        error: (err) => {
-          console.error('Encryption failed', err);
-          this.showError('Encryption request failed. Check console.');
-        }
-      });
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('image', this.selectedFile);
+
+      // Since URL pattern changed to exclude algo, we append it to body just in case
+      formData.append('algoId', algo);
+
+      this.api.uploadEncryptedPhoto(this.specialId, this.encryptionKey, algo, formData)
+        .pipe(finalize(() => {
+          this.isLoading.set(false);
+        }))
+        .subscribe({
+          next: (response: any) => {
+            this.showSuccess = true;
+            this.encryptedOutput = `File "${this.selectedFile?.name}" encrypted successfully.`;
+          },
+          error: (err) => {
+            console.error('File Encryption failed', err);
+            this.showError('File encryption failed. Check console.');
+          }
+        });
+    } else {
+      const payload = {
+        message: this.message,
+      };
+
+      this.api.sendDataEntry(this.specialId, this.encryptionKey, algo, payload)
+        .pipe(finalize(() => {
+          this.isLoading.set(false);
+        }))
+        .subscribe({
+          next: (response: any) => {
+            this.showSuccess = true;
+            this.encryptedOutput = this.mockEncrypt(this.message, this.encryptionKey);
+          },
+          error: (err) => {
+            console.error('Encryption failed', err);
+            this.showError('Encryption request failed. Check console.');
+          }
+        });
+    }
   }
 
   private mockEncrypt(text: string, key: string): string {
