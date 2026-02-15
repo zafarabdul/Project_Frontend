@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class ApiService {
   private http = inject(HttpClient);
-  private readonly BASE_URL = 'http://localhost:8000/api/data';
+  private readonly BASE_URL = '/api/data';
 
   registerUser(specialId: string, email: string): Observable<any> {
     return this.http.post(`${this.BASE_URL}/register/${specialId}/${email}/`, {});

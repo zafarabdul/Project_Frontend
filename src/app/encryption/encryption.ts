@@ -21,10 +21,11 @@ export class EncryptionComponent {
   private http = inject(HttpClient);
 
   // Form Model
-  specialId: string = 'USER-8821-X';
-  encryptionKey: string = '';
+  specialId: string = '123456';
+  encryptionKey: string = '1234';
   algorithm: string = 'AES-256-GCM';
   message: string = '';
+  customAlgorithm: string = 'AES-256-GCM';
   activeTab: 'text' | 'file' = 'text';
   selectedFile: File | null = null;
 
@@ -46,7 +47,8 @@ export class EncryptionComponent {
     'AES-256-GCM',
     'ChaCha20-Poly1305',
     'Blowfish',
-    'Twofish'
+    'Twofish',
+    'NewAlgo'
   ];
 
   generateKey() {
@@ -67,17 +69,17 @@ export class EncryptionComponent {
     this.encryptedOutput = null;
     this.error = null;
 
-    this.sendDataEntry();
-    // this.registerUser().subscribe({
-    //   next: () => {
-    //   },
-    //   error: (err) => {
-    //     console.error('Registration failed', err);
-    //     // Only stop if registration error
-    //     this.isLoading.set(false);
-    //     this.showError('Registration failed. Check console.');
-    //   }
-    // });
+    this.registerUser().subscribe({
+      next: () => {
+        this.sendDataEntry();
+      },
+      error: (err) => {
+        console.error('Registration failed', err);
+        // Only stop if registration error
+        this.isLoading.set(false);
+        this.showError('Registration failed. Check console.');
+      }
+    });
   }
 
   private registerUser() {
@@ -98,7 +100,17 @@ export class EncryptionComponent {
       message: this.message,
     };
 
-    this.api.sendDataEntry(this.specialId, this.encryptionKey, this.algorithm, payload)
+    let algo = this.algorithm;
+    if (this.algorithm === 'NewAlgo') {
+      if (!this.customAlgorithm) {
+        this.showError('Please specify the new algorithm name');
+        this.isLoading.set(false);
+        return;
+      }
+      algo = this.customAlgorithm;
+    }
+
+    this.api.sendDataEntry(this.specialId, this.encryptionKey, algo, payload)
       .pipe(finalize(() => {
         this.isLoading.set(false);
       }))

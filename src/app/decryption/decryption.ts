@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../shared/services/api';
-import { CardComponent } from '../shared/components/card/card.component';
 import { InputComponent } from '../shared/components/input/input.component';
 import { ButtonComponent } from '../shared/components/button/button.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
@@ -11,7 +10,7 @@ import { ToastComponent } from '../shared/components/toast/toast.component';
 @Component({
   selector: 'app-decryption',
   standalone: true,
-  imports: [CommonModule, FormsModule, CardComponent, InputComponent, ButtonComponent, ToastComponent],
+  imports: [CommonModule, FormsModule, InputComponent, ButtonComponent, ToastComponent],
   templateUrl: './decryption.html',
   styleUrl: './decryption.css'
 })
@@ -20,15 +19,17 @@ export class DecryptionComponent {
 
   securityId = signal('1234567899');
   decryptionKey = signal('zafar1');
-  algorithm = signal('zafar');
+  algorithm = signal('AES-256-GCM');
   encryptedPayload = signal('');
+  customAlgorithm = signal('');
 
   // Options
   algorithms = [
     'AES-256-GCM',
     'ChaCha20-Poly1305',
     'Blowfish',
-    'Twofish'
+    'Twofish',
+    'NewAlgo'
   ];
 
   isDecrypting = signal(false);
@@ -55,13 +56,19 @@ export class DecryptionComponent {
     }
     this.timeout = setTimeout(() => {
       // 1. Try fetching text message
-      this.api.fetchEncryptedPayload(this.securityId(), this.decryptionKey(), this.algorithm()).subscribe({
+      const algoToSend = this.algorithm() === 'NewAlgo' ? this.customAlgorithm() : this.algorithm();
+      this.api.fetchEncryptedPayload(this.securityId(), this.decryptionKey(), algoToSend).subscribe({
         next: (response: any) => {
           if (response && typeof response === 'object') {
             const payload = response.message || response.encrypted_data || JSON.stringify(response);
             this.encryptedPayload.set(payload);
-            if (response.algoId && this.algorithms.includes(response.algoId)) {
-              this.algorithm.set(response.algoId);
+            if (response.algoId) {
+              if (this.algorithms.includes(response.algoId) && response.algoId !== 'NewAlgo') {
+                this.algorithm.set(response.algoId);
+              } else {
+                this.algorithm.set('NewAlgo');
+                this.customAlgorithm.set(response.algoId);
+              }
             }
             this.showNotification('Message Fetched Successfully', 'success');
           } else {
