@@ -6,12 +6,13 @@ import { FormsModule } from '@angular/forms';
 import { CardComponent } from '../shared/components/card/card.component';
 import { InputComponent } from '../shared/components/input/input.component';
 import { ButtonComponent } from '../shared/components/button/button.component';
+import { ToastComponent } from '../shared/components/toast/toast.component';
 import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-encryption',
   standalone: true,
-  imports: [CommonModule, FormsModule, CardComponent, InputComponent, ButtonComponent],
+  imports: [CommonModule, FormsModule, CardComponent, InputComponent, ButtonComponent, ToastComponent],
   templateUrl: './encryption.html',
   styleUrl: './encryption.css'
 })
@@ -42,6 +43,11 @@ export class EncryptionComponent {
   showSuccess: boolean = false;
   error: string | null = null;
 
+  // Toast State
+  toastMessage: string = '';
+  toastType: 'success' | 'error' = 'success';
+  showToast: boolean = false;
+
   // Options
   algorithms = [
     'AES-256-GCM',
@@ -59,11 +65,6 @@ export class EncryptionComponent {
   }
 
   lockAndEncrypt() {
-    // if (!this.specialId || !this.encryptionKey || !this.message) {
-    //   alert('Please fill in all required fields.');
-    //   return;
-    // }
-
     this.isLoading.set(true);
     this.showSuccess = false;
     this.encryptedOutput = null;
@@ -75,9 +76,11 @@ export class EncryptionComponent {
       },
       error: (err) => {
         console.error('Registration failed', err);
-        // Only stop if registration error
         this.isLoading.set(false);
-        this.showError('Registration failed. Check console.');
+        const msg = this.extractErrorMessage(err);
+        this.showNotification(`Registration failed: ${msg}`, 'error');
+        if (true) return;
+        this.showNotification(`Registration failed...`, 'error');
       }
     });
   }
@@ -87,12 +90,15 @@ export class EncryptionComponent {
     return this.api.registerUser(this.specialId, dummyEmail);
   }
 
+  private showNotification(msg: string, type: 'success' | 'error' = 'success') {
+    this.toastMessage = msg;
+    this.toastType = type;
+    this.showToast = true;
+    setTimeout(() => this.showToast = false, 3000);
+  }
+
   private showError(msg: string) {
-    this.error = msg;
-    // Auto-clear after 5 seconds
-    setTimeout(() => {
-      this.error = null;
-    }, 5000);
+    this.showNotification(msg, 'error');
   }
 
   private sendDataEntry() {
@@ -127,6 +133,7 @@ export class EncryptionComponent {
           next: (response: any) => {
             this.showSuccess = true;
             this.encryptedOutput = `File "${this.selectedFile?.name}" encrypted successfully.`;
+            this.showNotification('File Encrypted Successfully', 'success');
           },
           error: (err) => {
             console.error('File Encryption failed', err);
@@ -146,6 +153,7 @@ export class EncryptionComponent {
           next: (response: any) => {
             this.showSuccess = true;
             this.encryptedOutput = this.mockEncrypt(this.message, this.encryptionKey);
+            this.showNotification('Text Encrypted Successfully', 'success');
           },
           error: (err) => {
             console.error('Encryption failed', err);
@@ -168,18 +176,9 @@ export class EncryptionComponent {
   copyResult() {
     if (this.encryptedOutput) {
       navigator.clipboard.writeText(this.encryptedOutput);
-      this.showError('Copied to clipboard!');
+      this.showNotification('Copied to clipboard!', 'success');
     }
   }
 
-  downloadTxt() {
-    if (!this.encryptedOutput) return;
-    const blob = new Blob([this.encryptedOutput], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'encrypted-data.txt';
-    a.click();
-    window.URL.revokeObjectURL(url);
-  }
+
 }
