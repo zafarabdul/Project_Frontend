@@ -21,10 +21,14 @@ export class ApiService {
     return this.http.get(`${this.BASE_URL}/${securityId}/${key}/${algo}/message/`);
   }
 
-  fetchEncryptedPhoto(securityId: string, key: string): Observable<Blob> {
-    return this.http.get(`${this.BASE_URL}/${securityId}/${key}/photo/`, { responseType: 'blob' });
+  fetchEncryptedPhoto(securityId: string, key: string): Observable<any> {
+    return this.http.get(`${this.BASE_URL}/${securityId}/${key}/photo/`);
   }
   uploadEncryptedPhoto(specialId: string, key: string, algo: string, formData: FormData): Observable<any> {
     return this.http.post(`${this.BASE_URL}/${specialId}/${key}/photo/`, formData);
+  }
+
+  downloadImage(url: string): Observable<Blob> {
+    return this.http.get(url, { responseType: 'blob' });
   }
 }

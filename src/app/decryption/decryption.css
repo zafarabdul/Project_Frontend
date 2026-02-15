@@ -461,3 +461,44 @@ select:focus {
     background-color: #131c2e;
     box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
 }
+
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    background: #0f172a;
+    padding: 0.35rem;
+    border-radius: 8px;
+    border: 1px solid #334155;
+}
+
+.tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #64748b;
+    padding: 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tab.active {
+    background: #1e293b;
+    color: #38bdf8;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    border: 1px solid #334155;
+}
+
+.tab:hover:not(.active) {
+    color: #94a3b8;
+    background: rgba(30, 41, 59, 0.5);
+}

@@ -17,11 +17,12 @@ import { ToastComponent } from '../shared/components/toast/toast.component';
 export class DecryptionComponent {
   private api = inject(ApiService);
 
-  securityId = signal('1234567899');
-  decryptionKey = signal('zafar1');
+  securityId = signal('1234560000');
+  decryptionKey = signal('1234');
   algorithm = signal('AES-256-GCM');
   encryptedPayload = signal('');
   customAlgorithm = signal('');
+  decryptionType = signal<'text' | 'image'>('text');
 
   // Options
   algorithms = [
@@ -55,55 +56,103 @@ export class DecryptionComponent {
       this.timeout = null;
     }
     this.timeout = setTimeout(() => {
-      // 1. Try fetching text message
-      const algoToSend = this.algorithm() === 'NewAlgo' ? this.customAlgorithm() : this.algorithm();
-      this.api.fetchEncryptedPayload(this.securityId(), this.decryptionKey(), algoToSend).subscribe({
-        next: (response: any) => {
-          if (response && typeof response === 'object') {
-            const payload = response.message || response.encrypted_data || JSON.stringify(response);
-            this.encryptedPayload.set(payload);
-            if (response.algoId) {
-              if (this.algorithms.includes(response.algoId) && response.algoId !== 'NewAlgo') {
-                this.algorithm.set(response.algoId);
-              } else {
-                this.algorithm.set('NewAlgo');
-                this.customAlgorithm.set(response.algoId);
+      if (this.decryptionType() === 'text') {
+        const algoToSend = this.algorithm() === 'NewAlgo' ? this.customAlgorithm() : this.algorithm();
+        this.api.fetchEncryptedPayload(this.securityId(), this.decryptionKey(), algoToSend).subscribe({
+          next: (response: any) => {
+            if (response && typeof response === 'object') {
+              const payload = response.message || response.encrypted_data || JSON.stringify(response);
+              this.encryptedPayload.set(payload);
+              if (response.algoId) {
+                if (this.algorithms.includes(response.algoId) && response.algoId !== 'NewAlgo') {
+                  this.algorithm.set(response.algoId);
+                } else {
+                  this.algorithm.set('NewAlgo');
+                  this.customAlgorithm.set(response.algoId);
+                }
               }
+              this.showNotification('Message Fetched Successfully', 'success');
+            } else {
+              this.encryptedPayload.set(String(response));
+              this.showNotification('Message Fetched Successfully', 'success');
             }
-            this.showNotification('Message Fetched Successfully', 'success');
-          } else {
-            this.encryptedPayload.set(String(response));
-            this.showNotification('Message Fetched Successfully', 'success');
+            this.isLoadingPayload.set(false);
+          },
+          error: (err: any) => {
+            this.handleFetchError(err.error?.message || 'Failed to fetch text data', err.status);
+            this.isLoadingPayload.set(false);
           }
-          this.isLoadingPayload.set(false);
-        },
-        error: (err: any) => {
-          // If text fetch fails, try fetching photo
-          this.fetchPhoto();
-        }
-      });
+        });
+      } else {
+        this.fetchPhoto();
+      }
     }, 1000);
   }
 
   fetchPhoto() {
     this.api.fetchEncryptedPhoto(this.securityId(), this.decryptionKey()).subscribe({
-      next: (blob: Blob) => {
-        if (blob.size > 0 && blob.type.startsWith('image/')) {
-          const url = URL.createObjectURL(blob);
+      next: (response: any) => {
+        let url = '';
+        if (typeof response === 'string') {
+          url = response;
+        } else if (response && typeof response === 'object') {
+          // Check common property names for the image URL
+          url = response.image || response.photo || response.url || response.src || response.file || '';
+        }
+
+        if (url) {
           this.photoUrl.set(url);
-          this.encryptedPayload.set('Image data received');
-          this.showNotification('Photo Fetched Successfully', 'success');
+          this.encryptedPayload.set('Photo decrypted. Click "DOWNLOAD PHOTO" to save.');
+          this.showNotification('Photo Decrypted Successfully', 'success');
         } else {
-          this.handleFetchError('No valid text or photo found');
+          this.handleFetchError('No valid photo URL found in response');
         }
         this.isLoadingPayload.set(false);
       },
       error: (err) => {
-        // Both failed
-        this.handleFetchError(err.error?.message || err.statusText || 'Unknown Error', err.status);
+        this.handleFetchError(err.error?.message || 'Failed to fetch photo', err.status);
         this.isLoadingPayload.set(false);
       }
     });
+  }
+
+  downloadPhoto() {
+    const url = this.photoUrl();
+    if (url) {
+      if (url.startsWith('http') || url.startsWith('/')) {
+        this.api.downloadImage(url).subscribe({
+          next: (blob) => {
+            const objectUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = objectUrl;
+            a.download = 'decrypted-image.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(objectUrl);
+            this.showNotification('Download Started', 'success');
+          },
+          error: (err) => {
+            console.error('Blob fetch failed, falling back to direct link', err);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'decrypted-image.png';
+            a.target = '_blank'; // Open in new tab if download fails
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          }
+        });
+      } else {
+        // Data URL or Blob URL
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'decrypted-image.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+    }
   }
 
   handleFetchError(msg: string, status?: any) {

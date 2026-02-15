@@ -21,7 +21,7 @@ export class EncryptionComponent {
   private http = inject(HttpClient);
 
   // Form Model
-  specialId: string = '123456';
+  specialId: string = '1234560000';
   encryptionKey: string = '1234';
   algorithm: string = 'AES-256-GCM';
   message: string = '';
