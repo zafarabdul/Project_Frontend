@@ -77,9 +77,6 @@ export class EncryptionComponent {
       error: (err) => {
         console.error('Registration failed', err);
         this.isLoading.set(false);
-        const msg = this.extractErrorMessage(err);
-        this.showNotification(`Registration failed: ${msg}`, 'error');
-        if (true) return;
         this.showNotification(`Registration failed...`, 'error');
       }
     });
