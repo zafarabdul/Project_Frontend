@@ -198,7 +198,7 @@
             </div>
         </app-card>
     </div>
-    <app-toast [show]="showToast" [message]="toastMessage" [type]="toastType"></app-toast>
+    <app-toast [show]="showToast" [message]="toastMessage" [type]="toastType" (close)="showToast = false"></app-toast>
     <style>
         @keyframes spin {
             0% {

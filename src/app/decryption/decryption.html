@@ -170,7 +170,8 @@
     </div>
 
     <!-- Shared Toast Notification -->
-    <app-toast [show]="showToast()" [message]="toastMessage()" [type]="toastType()"></app-toast>
+    <app-toast [show]="showToast()" [message]="toastMessage()" [type]="toastType()"
+        (close)="showToast.set(false)"></app-toast>
 </div>
 <style>
     @keyframes spin {
