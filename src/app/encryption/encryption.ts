@@ -116,27 +116,33 @@ export class EncryptionComponent {
         return;
       }
 
-      const formData = new FormData();
-      formData.append('image', this.selectedFile);
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64Image = reader.result as string;
 
-      // Since URL pattern changed to exclude algo, we append it to body just in case
-      formData.append('algoId', algo);
+        this.api.uploadEncryptedPhoto(this.specialId, this.encryptionKey, algo, base64Image)
+          .pipe(finalize(() => {
+            this.isLoading.set(false);
+          }))
+          .subscribe({
+            next: (response: any) => {
+              this.showSuccess = true;
+              this.encryptedOutput = `File "${this.selectedFile?.name}" encrypted successfully.`;
+              this.showNotification('File Encrypted Successfully', 'success');
+            },
+            error: (err) => {
+              console.error('File Encryption failed', err);
+              this.showError('File encryption failed. Check console.');
+            }
+          });
+      };
 
-      this.api.uploadEncryptedPhoto(this.specialId, this.encryptionKey, algo, formData)
-        .pipe(finalize(() => {
-          this.isLoading.set(false);
-        }))
-        .subscribe({
-          next: (response: any) => {
-            this.showSuccess = true;
-            this.encryptedOutput = `File "${this.selectedFile?.name}" encrypted successfully.`;
-            this.showNotification('File Encrypted Successfully', 'success');
-          },
-          error: (err) => {
-            console.error('File Encryption failed', err);
-            this.showError('File encryption failed. Check console.');
-          }
-        });
+      reader.onerror = () => {
+        this.showError('Failed to read file.');
+        this.isLoading.set(false);
+      };
+
+      reader.readAsDataURL(this.selectedFile);
     } else {
       const payload = {
         message: this.message,

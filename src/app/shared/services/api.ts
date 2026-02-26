@@ -48,18 +48,16 @@ export class ApiService {
     });
   }
 
-  uploadEncryptedPhoto(specialId: string, key: string, algo: string, formData: FormData): Observable<any> {
-    // Adding orchestration metadata to the FormData
-    formData.append('action', 'upload_photo');
-    formData.append('specialId', specialId);
-    formData.append('key', key);
-    formData.append('algo', algo);
+  uploadEncryptedPhoto(specialId: string, key: string, algo: string, base64Image: string): Observable<any> {
+    const payload = {
+      action: 'upload_photo',
+      specialId: specialId,
+      key: key,
+      algo: algo,
+      image: base64Image
+    };
 
-    return this.http.post(this.LAMBDA_URL, formData, {
-      headers: {
-        'Accept': 'multipart/form-data'
-      }
-    });
+    return this.http.post(this.LAMBDA_URL, payload);
   }
 
   downloadImage(url: string): Observable<Blob> {
