@@ -139,6 +139,12 @@ header {
   font-size: 0.75rem;
   text-decoration: none;
   cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.action-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
 }
 
 .input-wrapper {
