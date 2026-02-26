@@ -55,7 +55,11 @@ export class ApiService {
     formData.append('key', key);
     formData.append('algo', algo);
 
-    return this.http.post(this.LAMBDA_URL, formData);
+    return this.http.post(this.LAMBDA_URL, formData, {
+      headers: {
+        'Accept': 'multipart/form-data'
+      }
+    });
   }
 
   downloadImage(url: string): Observable<Blob> {
