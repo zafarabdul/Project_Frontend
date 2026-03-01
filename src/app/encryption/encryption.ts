@@ -54,7 +54,7 @@ export class EncryptionComponent {
     'ChaCha20-Poly1305',
     'Blowfish',
     'Twofish',
-    'NewAlgo'
+    'Custom Algo'
   ];
 
   generateKey() {
@@ -100,7 +100,7 @@ export class EncryptionComponent {
 
   private sendDataEntry() {
     let algo = this.algorithm;
-    if (this.algorithm === 'NewAlgo') {
+    if (this.algorithm === 'Custom Algo') {
       if (!this.customAlgorithm) {
         this.showError('Please specify the new algorithm name');
         this.isLoading.set(false);

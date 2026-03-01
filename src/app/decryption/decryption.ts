@@ -30,7 +30,7 @@ export class DecryptionComponent {
     'ChaCha20-Poly1305',
     'Blowfish',
     'Twofish',
-    'NewAlgo'
+    'Custom Algo'
   ];
 
   isDecrypting = signal(false);
@@ -57,17 +57,17 @@ export class DecryptionComponent {
     }
     this.timeout = setTimeout(() => {
       if (this.decryptionType() === 'text') {
-        const algoToSend = this.algorithm() === 'NewAlgo' ? this.customAlgorithm() : this.algorithm();
+        const algoToSend = this.algorithm() === 'Custom Algo' ? this.customAlgorithm() : this.algorithm();
         this.api.fetchEncryptedPayload(this.securityId(), this.decryptionKey(), algoToSend).subscribe({
           next: (response: any) => {
             if (response && typeof response === 'object') {
               const payload = response.message || response.encrypted_data || JSON.stringify(response);
               this.encryptedPayload.set(payload);
               if (response.algoId) {
-                if (this.algorithms.includes(response.algoId) && response.algoId !== 'NewAlgo') {
+                if (this.algorithms.includes(response.algoId) && response.algoId !== 'Custom Algo') {
                   this.algorithm.set(response.algoId);
                 } else {
-                  this.algorithm.set('NewAlgo');
+                  this.algorithm.set('Custom Algo');
                   this.customAlgorithm.set(response.algoId);
                 }
               }
