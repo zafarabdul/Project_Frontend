@@ -61,6 +61,46 @@ header {
   stroke: url(#brand-gradient);
 }
 
+.dev-warning {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f59e0b;
+  -webkit-text-fill-color: #f59e0b;
+  margin-left: 0.25rem;
+  cursor: help;
+  position: relative;
+}
+
+.dev-warning svg {
+  stroke: currentColor;
+}
+
+.dev-warning:hover::after {
+  content: "Still under development (Data may not be saved)";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 10px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #f8fafc;
+  -webkit-text-fill-color: #f8fafc;
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  pointer-events: none;
+  animation: fadeInDown 0.2s ease-out;
+}
+
 .nav-buttons button {
   background: transparent;
   border: 1px solid transparent;
