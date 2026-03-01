@@ -73,9 +73,10 @@
 
             <ng-container *ngIf="decryptionType() === 'text'">
                 <div class="form-group">
-                    <label>DECRYPTION ALGORITHM</label>
+                    <label style="margin-bottom: 0.75rem; display: block;">DECRYPTION ALGORITHM</label>
                     <div class="input-wrapper">
-                        <select [ngModel]="algorithm()" (ngModelChange)="algorithm.set($event)">
+                        <select [ngModel]="algorithm()" (ngModelChange)="algorithm.set($event)"
+                            style="height: 2.8rem; font-size: 0.95rem; padding: 0.5rem 1rem;">
                             <option *ngFor="let algo of algorithms" [value]="algo">{{ algo }} {{ algo === 'AES-256-GCM'
                                 ?
                                 '(Recommended)' : '' }}</option>
