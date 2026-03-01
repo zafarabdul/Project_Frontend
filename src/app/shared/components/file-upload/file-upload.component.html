@@ -1,0 +1,13 @@
+<div class="file-upload-area" (click)="fileInput.click()">
+    <input type="file" #fileInput style="display: none" (change)="onFileSelected($event)">
+    <div *ngIf="!file" class="upload-prompt">
+        <ng-content select="[upload-icon]"></ng-content>
+        <p class="title">{{ label }}</p>
+        <p class="subtext" *ngIf="subtext">{{ subtext }}</p>
+    </div>
+    <div *ngIf="file" class="file-display">
+        <ng-content select="[file-icon]"></ng-content>
+        <p class="file-name">{{ file.name }}</p>
+        <button type="button" class="action-link" (click)="removeFile($event)">Remove File</button>
+    </div>
+</div>

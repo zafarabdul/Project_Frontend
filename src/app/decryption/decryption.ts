@@ -6,11 +6,11 @@ import { ApiService } from '../shared/services/api';
 import { InputComponent } from '../shared/components/input/input.component';
 import { ButtonComponent } from '../shared/components/button/button.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
-
+import { SelectComponent } from '../shared/components/select/select.component';
 @Component({
   selector: 'app-decryption',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputComponent, ButtonComponent, ToastComponent],
+  imports: [CommonModule, FormsModule, InputComponent, ButtonComponent, ToastComponent, SelectComponent],
   templateUrl: './decryption.html',
   styleUrl: './decryption.css'
 })

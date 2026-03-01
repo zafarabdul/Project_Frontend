@@ -39,14 +39,8 @@
             </app-input>
 
             <ng-container *ngIf="activeTab === 'text'">
-                <div class="form-group">
-                    <label style="margin-bottom: 0.75rem; display: block;">Algorithm</label>
-                    <select [ngModel]="algorithm" (ngModelChange)="onAlgorithmChange($event)"
-                        style="height: 2.8rem; font-size: 0.95rem; padding: 0.5rem 1rem;">
-                        <option *ngFor="let algo of algorithms" [value]="algo">{{ algo }} {{ algo === 'AES-256-GCM' ?
-                            '(Recommended)' : '' }}</option>
-                    </select>
-                </div>
+                <app-select label="Algorithm" [options]="algorithms" recommendedOption="AES-256-GCM"
+                    [ngModel]="algorithm" (ngModelChange)="onAlgorithmChange($event)"></app-select>
 
                 <div *ngIf="algorithm === 'Custom Algo'">
                     <app-input label="Custom Algorithm Name" placeholder="e.g. RSA-2048" [(ngModel)]="customAlgorithm"
@@ -103,36 +97,25 @@
                 </ng-container>
 
                 <!-- File Upload Area -->
-                <div *ngIf="activeTab === 'file'" class="file-upload-area" (click)="fileInput.click()">
-                    <input type="file" #fileInput style="display: none" (change)="onFileSelected($event)">
-                    <div class="upload-content" *ngIf="!selectedFile">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                            style="margin-bottom: 1rem; color: #0ea5e9;">
+                <ng-container *ngIf="activeTab === 'file'">
+                    <app-file-upload [file]="selectedFile" label="Initiate Data Uplink"
+                        subtext="Drop encrypted payload or select local file for secure transmission."
+                        (fileSelected)="onFileSelected($event)">
+                        <svg upload-icon xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round" style="color: #0ea5e9;">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                             <polyline points="17 8 12 3 7 8"></polyline>
                             <line x1="12" y1="3" x2="12" y2="15"></line>
                         </svg>
-                        <p style="margin: 0; font-weight: 600; font-size: 1rem;">Initiate Data Uplink</p>
-                        <p style="margin: 0.5rem 0 0; color: #94a3b8; font-size: 0.8rem;">Drop encrypted payload or
-                            select local file for secure transmission.</p>
-                    </div>
-                    <div class="upload-content" *ngIf="selectedFile">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-                            stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                            style="margin-bottom: 1rem;">
+                        <svg file-icon xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
+                            fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                             <polyline points="14 2 14 8 20 8"></polyline>
                         </svg>
-                        <p style="margin: 0; font-weight: 600; font-size: 1rem; color: #10b981;">{{ selectedFile.name }}
-                        </p>
-                        <p style="margin: 0.5rem 0 0; color: #94a3b8; font-size: 0.8rem;">Size: {{ (selectedFile.size /
-                            1024).toFixed(2) }} KB | Ready for Encryption</p>
-                        <button class="btn btn-secondary"
-                            style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.8rem;"
-                            (click)="selectedFile = null; $event.stopPropagation()">Terminate Selection</button>
-                    </div>
-                </div>
+                    </app-file-upload>
+                </ng-container>
             </div>
 
             <div class="btn-group">
@@ -264,35 +247,20 @@
             </div>
 
             <div *ngIf="customAlgoTab === 'upload'" style="display: flex; flex-direction: column; flex: 1;">
-                <div class="file-upload-area" (click)="customAlgoFileInput.click()"
-                    style="flex: 1; min-height: 350px; padding: 2.5rem 1.5rem; text-align: center; border: 1px dashed #475569; border-radius: 8px; cursor: pointer; background: rgba(0,0,0,0.2); transition: all 0.2s; margin-bottom: 1rem; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                    <input type="file" #customAlgoFileInput style="display: none"
-                        (change)="onCustomAlgoFileSelected($event)">
-                    <div *ngIf="!customCodeFile">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
-                            stroke="#0ea5e9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                            style="margin-bottom: 1rem;">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="17 8 12 3 7 8"></polyline>
-                            <line x1="12" y1="3" x2="12" y2="15"></line>
-                        </svg>
-                        <p style="margin: 0; font-size: 0.95rem; font-weight: 600; color: #e2e8f0;">Select Algorithm
-                            File</p>
-                        <p style="margin: 0.5rem 0 0 0; font-size: 0.8rem; color: #94a3b8;">.py, .js, .txt etc</p>
-                    </div>
-                    <div *ngIf="customCodeFile">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
-                            stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                            style="margin-bottom: 1rem;">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                        </svg>
-                        <p style="margin: 0; font-size: 0.95rem; font-weight: 600; color: #10b981;">{{
-                            customCodeFile.name }}</p>
-                        <button class="action-link" style="margin-top: 1rem; border: none; background: transparent;"
-                            (click)="customCodeFile = null; $event.stopPropagation()">Remove File</button>
-                    </div>
-                </div>
+                <app-file-upload [file]="customCodeFile" label="Select Algorithm File" subtext=".py, .js, .txt etc"
+                    (fileSelected)="onCustomAlgoFileSelected($event)" style="flex: 1;">
+                    <svg upload-icon xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
+                        fill="none" stroke="#0ea5e9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <svg file-icon xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
+                        fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                </app-file-upload>
                 <button class="btn btn-secondary"
                     style="width: 100%; padding: 0.75rem; font-weight: 600; margin-top: auto;"
                     (click)="uploadCustomCodeFile()" [disabled]="!customCodeFile">Upload Selected File</button>

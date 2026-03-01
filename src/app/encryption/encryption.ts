@@ -7,12 +7,14 @@ import { CardComponent } from '../shared/components/card/card.component';
 import { InputComponent } from '../shared/components/input/input.component';
 import { ButtonComponent } from '../shared/components/button/button.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
+import { SelectComponent } from '../shared/components/select/select.component';
+import { FileUploadComponent } from '../shared/components/file-upload/file-upload.component';
 import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-encryption',
   standalone: true,
-  imports: [CommonModule, FormsModule, CardComponent, InputComponent, ButtonComponent, ToastComponent],
+  imports: [CommonModule, FormsModule, CardComponent, InputComponent, ButtonComponent, ToastComponent, SelectComponent, FileUploadComponent],
   templateUrl: './encryption.html',
   styleUrl: './encryption.css'
 })
@@ -30,11 +32,8 @@ export class EncryptionComponent {
   activeTab: 'text' | 'file' = 'text';
   selectedFile: File | null = null;
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-    }
+  onFileSelected(file: File | null) {
+    this.selectedFile = file;
   }
 
   // State
@@ -69,11 +68,8 @@ export class EncryptionComponent {
     }
   }
 
-  onCustomAlgoFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.customCodeFile = file;
-    }
+  onCustomAlgoFileSelected(file: File | null) {
+    this.customCodeFile = file;
   }
 
   uploadCustomCode() {

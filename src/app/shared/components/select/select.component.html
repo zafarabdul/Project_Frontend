@@ -1,0 +1,10 @@
+<div class="form-group">
+    <label *ngIf="label" style="margin-bottom: 0.75rem; display: block;">{{ label }}</label>
+    <div class="input-wrapper">
+        <select [ngModel]="value" (change)="onSelectChange($event)" [disabled]="disabled" class="select-control">
+            <option *ngFor="let option of options" [value]="option">
+                {{ option }} {{ option === recommendedOption ? '(Recommended)' : '' }}
+            </option>
+        </select>
+    </div>
+</div>
