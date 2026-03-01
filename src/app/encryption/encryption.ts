@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ViewChild, ElementRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../shared/services/api';
 import { CommonModule } from '@angular/common';
@@ -56,6 +56,43 @@ export class EncryptionComponent {
     'Twofish',
     'Custom Algo'
   ];
+
+  showCustomAlgoDialog = false;
+  customAlgoTab: 'code' | 'upload' = 'code';
+  customCode: string = `encrypt(string a, string b) {\n  return a;\n}\n\ndecrypt(string a, string b) {\n  return a;\n}`;
+  customCodeFile: File | null = null;
+
+  onAlgorithmChange(algo: string) {
+    this.algorithm = algo;
+    if (algo === 'Custom Algo') {
+      this.showCustomAlgoDialog = true;
+    }
+  }
+
+  onCustomAlgoFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.customCodeFile = file;
+    }
+  }
+
+  uploadCustomCode() {
+    if (!this.customCode.trim()) {
+      this.showError('Please write some code first');
+      return;
+    }
+    this.showNotification('Custom code uploaded successfully', 'success');
+    this.showCustomAlgoDialog = false;
+  }
+
+  uploadCustomCodeFile() {
+    if (!this.customCodeFile) {
+      this.showError('Please select a file first');
+      return;
+    }
+    this.showNotification(`File ${this.customCodeFile.name} uploaded successfully`, 'success');
+    this.showCustomAlgoDialog = false;
+  }
 
   generateKey() {
     this.encryptionKey = Array(32)
