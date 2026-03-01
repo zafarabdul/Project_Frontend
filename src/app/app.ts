@@ -11,4 +11,9 @@ import { CommonModule } from '@angular/common';
 })
 export class App {
   title = 'EncryptionApp';
+  isMobileMenuOpen = false;
+
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
 }

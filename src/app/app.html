@@ -13,8 +13,17 @@
       </svg>
       <span>CipherVault v3.0</span>
     </div>
-    <div class="nav-buttons">
-      <button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+
+    <!-- Mobile Navigation Toggle -->
+    <div class="hamburger" (click)="toggleMobileMenu()" [class.active]="isMobileMenuOpen">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <div class="nav-buttons" [class.nav-open]="isMobileMenuOpen">
+      <button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+        (click)="isMobileMenuOpen = false">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -22,7 +31,7 @@
         </svg>
         Encrypt
       </button>
-      <button routerLink="/decrypt" routerLinkActive="active">
+      <button routerLink="/decrypt" routerLinkActive="active" (click)="isMobileMenuOpen = false">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -31,7 +40,7 @@
         </svg>
         Decrypt
       </button>
-      <button routerLink="/buy" routerLinkActive="active">
+      <button routerLink="/buy" routerLinkActive="active" (click)="isMobileMenuOpen = false">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
