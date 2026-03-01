@@ -1,4 +1,4 @@
-<div class="file-upload-area" (click)="fileInput.click()">
+<div class="file-upload-area" (click)="fileInput.click()" [style.padding]="padding">
     <input type="file" #fileInput style="display: none" (change)="onFileSelected($event)">
     <div *ngIf="!file" class="upload-prompt">
         <ng-content select="[upload-icon]"></ng-content>

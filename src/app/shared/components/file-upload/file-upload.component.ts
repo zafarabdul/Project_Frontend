@@ -12,6 +12,7 @@ export class FileUploadComponent {
     @Input() file: File | null = null;
     @Input() label: string = 'Select File';
     @Input() subtext: string = '';
+    @Input() padding: string = '2.5rem 1.5rem';
 
     @Output() fileSelected = new EventEmitter<File | null>();
 
