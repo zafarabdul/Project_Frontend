@@ -58,7 +58,24 @@ export class EncryptionComponent {
 
   showCustomAlgoDialog = false;
   customAlgoTab: 'code' | 'upload' = 'code';
-  customCode: string = `encrypt(string a, string b) {\n  return a;\n}\n\ndecrypt(string a, string b) {\n  return a;\n}`;
+  customCode: string = `import sys
+
+def encrypt(text, key):
+    # Add your custom encryption logic here
+    return text
+
+def decrypt(text, key):
+    # Add your custom decryption logic here
+    return text
+
+if __name__ == "__main__":
+    if len(sys.argv) >= 4:
+        action, text, key = sys.argv[1], sys.argv[2], sys.argv[3]
+        if action == "encrypt":
+            print(encrypt(text, key))
+        elif action == "decrypt":
+            print(decrypt(text, key))
+`;
   customCodeFile: File | null = null;
 
   onAlgorithmChange(algo: string) {
