@@ -72,23 +72,6 @@ export class EncryptionComponent {
     this.customCodeFile = file;
   }
 
-  uploadCustomCode() {
-    if (!this.customCode.trim()) {
-      this.showError('Please write some code first');
-      return;
-    }
-    this.showNotification('Custom code uploaded successfully', 'success');
-    this.showCustomAlgoDialog = false;
-  }
-
-  uploadCustomCodeFile() {
-    if (!this.customCodeFile) {
-      this.showError('Please select a file first');
-      return;
-    }
-    this.showNotification(`File ${this.customCodeFile.name} uploaded successfully`, 'success');
-    this.showCustomAlgoDialog = false;
-  }
 
   generateKey() {
     this.encryptionKey = Array(32)
@@ -133,6 +116,8 @@ export class EncryptionComponent {
 
   private sendDataEntry() {
     let algo = this.algorithm;
+    let customAlgoBase64: string | undefined = undefined;
+
     if (this.algorithm === 'Custom Algo') {
       if (!this.customAlgorithm) {
         this.showError('Please specify the new algorithm name');
@@ -140,7 +125,47 @@ export class EncryptionComponent {
         return;
       }
       algo = this.customAlgorithm;
+
+      this.prepareCustomAlgoCode(algo);
+      return; // Execution will continue inside prepareCustomAlgoCode
+    } else {
+      this.processDataEntryRequest(algo, customAlgoBase64);
     }
+  }
+
+  private prepareCustomAlgoCode(algo: string) {
+    if (this.customAlgoTab === 'upload' && this.customCodeFile) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.processDataEntryRequest(algo, reader.result as string);
+      };
+      reader.onerror = () => {
+        this.showError('Failed to read custom code file.');
+        this.isLoading.set(false);
+      };
+      reader.readAsDataURL(this.customCodeFile);
+    } else if (this.customAlgoTab === 'code' && this.customCode.trim()) {
+      const blob = new Blob([this.customCode], { type: 'text/x-python' });
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.processDataEntryRequest(algo, reader.result as string);
+      };
+      reader.onerror = () => {
+        this.showError('Failed to read custom code blob.');
+        this.isLoading.set(false);
+      };
+      reader.readAsDataURL(blob);
+    } else {
+      // No custom code provided, just proceed without it, or enforce it?
+      // It's likely we want to send what we have, or could fail here if it's strictly required
+      this.processDataEntryRequest(algo, undefined);
+    }
+  }
+
+  private processDataEntryRequest(algo: string, customAlgoBase64?: string) {
+    const payload = {
+      message: this.message,
+    };
 
     if (this.activeTab === 'file') {
       if (!this.selectedFile) {
@@ -153,7 +178,7 @@ export class EncryptionComponent {
       reader.onload = () => {
         const base64Image = reader.result as string;
 
-        this.api.uploadEncryptedPhoto(this.specialId, this.encryptionKey, algo, base64Image)
+        this.api.sendDataEntry(this.specialId, this.encryptionKey, algo, payload, { file: base64Image, customAlgoCode: customAlgoBase64 })
           .pipe(finalize(() => {
             this.isLoading.set(false);
           }))
@@ -163,7 +188,7 @@ export class EncryptionComponent {
               this.encryptedOutput = `File "${this.selectedFile?.name}" encrypted successfully.`;
               this.showNotification('File Encrypted Successfully', 'success');
             },
-            error: (err) => {
+            error: (err: any) => {
               console.error('File Encryption failed', err);
               this.showError('File encryption failed. Check console.');
             }
@@ -177,11 +202,7 @@ export class EncryptionComponent {
 
       reader.readAsDataURL(this.selectedFile);
     } else {
-      const payload = {
-        message: this.message,
-      };
-
-      this.api.sendDataEntry(this.specialId, this.encryptionKey, algo, payload)
+      this.api.sendDataEntry(this.specialId, this.encryptionKey, algo, payload, { customAlgoCode: customAlgoBase64 })
         .pipe(finalize(() => {
           this.isLoading.set(false);
         }))
@@ -191,7 +212,7 @@ export class EncryptionComponent {
             this.encryptedOutput = this.mockEncrypt(this.message, this.encryptionKey);
             this.showNotification('Text Encrypted Successfully', 'success');
           },
-          error: (err) => {
+          error: (err: any) => {
             console.error('Encryption failed', err);
             this.showError('Encryption request failed. Check console.');
           }

@@ -19,15 +19,22 @@ export class ApiService {
     });
   }
 
-  sendDataEntry(specialId: string, key: string, algo: string, payload: any): Observable<any> {
+  sendDataEntry(specialId: string, key: string, algo: string, payload: any, options?: { file?: string, customAlgoCode?: string }): Observable<any> {
     // Calling Lambda to handle orchestration/encryption
-    return this.http.post(this.LAMBDA_URL, {
+    const body: any = {
       action: 'encrypt',
       specialId,
       key,
       algo,
       data: payload
-    });
+    };
+    if (options?.file) {
+      body.file = options.file;
+    }
+    if (options?.customAlgoCode) {
+      body.customAlgoCode = options.customAlgoCode;
+    }
+    return this.http.post(this.LAMBDA_URL, body);
   }
 
   fetchEncryptedPayload(securityId: string, key: string, algo: string): Observable<any> {
@@ -48,19 +55,11 @@ export class ApiService {
     });
   }
 
-  uploadEncryptedPhoto(specialId: string, key: string, algo: string, base64Image: string): Observable<any> {
-    const payload = {
-      action: 'upload_photo',
-      specialId: specialId,
-      key: key,
-      algo: algo,
-      image: base64Image
-    };
 
-    return this.http.post(this.LAMBDA_URL, payload);
-  }
 
   downloadImage(url: string): Observable<Blob> {
     return this.http.get(url, { responseType: 'blob' });
   }
+
+
 }
