@@ -209,7 +209,8 @@ export class EncryptionComponent {
         .subscribe({
           next: (response: any) => {
             this.showSuccess = true;
-            this.encryptedOutput = this.mockEncrypt(this.message, this.encryptionKey);
+            // Use the actual encrypted output returned by the Lambda function backend!
+            this.encryptedOutput = response.message || response.encrypted_data || "Successfully Encrypted!";
             this.showNotification('Text Encrypted Successfully', 'success');
           },
           error: (err: any) => {
@@ -220,9 +221,7 @@ export class EncryptionComponent {
     }
   }
 
-  private mockEncrypt(text: string, key: string): string {
-    return btoa(text + key).split('').reverse().join('');
-  }
+  // Mock encrypt function removed as we now use backend execution
 
   clear() {
     this.message = '';
