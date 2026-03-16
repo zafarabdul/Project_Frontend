@@ -39,6 +39,7 @@ export class DecryptionComponent {
   isLoadingPayload = signal(false);
   decryptedOutput = signal<string | null>(null);
   showQR = signal(false);
+  expiresAt = signal<string | null>(null);
   
   constructor() {
     // Auto-fetch when credentials change
@@ -78,6 +79,7 @@ export class DecryptionComponent {
             if (response && typeof response === 'object') {
               const payload = response.message || response.encrypted_data || JSON.stringify(response);
               this.encryptedPayload.set(payload);
+              this.expiresAt.set(response.expires_at || null);
               if (response.algoId) {
                 if (this.algorithms.includes(response.algoId) && response.algoId !== 'Custom Algo') {
                   this.algorithm.set(response.algoId);
@@ -113,6 +115,7 @@ export class DecryptionComponent {
         } else if (response && typeof response === 'object') {
           // Check common property names for the image URL
           url = response.image || response.photo || response.url || response.src || response.file || '';
+          this.expiresAt.set(response.expires_at || null);
         }
 
         if (url) {
