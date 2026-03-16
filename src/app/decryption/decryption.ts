@@ -44,21 +44,15 @@ export class DecryptionComponent {
 
   
   constructor() {
-    // Auto-fetch when credentials change
-    effect(() => {
-      const id = this.securityId();
-      const key = this.decryptionKey();
-      if (id && key && key.length >= 2) {
-        this.fetchEncryptedPayload();
-      }
-    });
+    // Manual trigger only
   }
 
 
   onCredentialsChange() {
-    if (this.securityId() && this.decryptionKey() && this.decryptionKey().length >= 2) {
-      this.fetchEncryptedPayload();
-    }
+    // Reset output when credentials change, but don't fetch
+    this.decryptedOutput.set(null);
+    this.encryptedPayload.set('');
+    this.isExpired.set(false);
   }
 
   timeout: any;
@@ -69,6 +63,7 @@ export class DecryptionComponent {
     this.encryptedPayload.set(''); // Reset
     this.photoUrl.set(null); // Reset photo
     this.isExpired.set(false); // Reset expired state
+    this.decryptedOutput.set(null); // Reset old output
 
     if (this.timeout) {
       clearTimeout(this.timeout);
@@ -99,7 +94,8 @@ export class DecryptionComponent {
             this.isLoadingPayload.set(false);
           },
           error: (err: any) => {
-            this.handleFetchError(err.error?.message || 'Failed to fetch text data', err.status);
+            const msg = err.error?.error || err.error?.message || 'Failed to fetch text data';
+            this.handleFetchError(msg, err.status);
             this.isLoadingPayload.set(false);
           }
         });
@@ -131,7 +127,8 @@ export class DecryptionComponent {
         this.isLoadingPayload.set(false);
       },
       error: (err) => {
-        this.handleFetchError(err.error?.message || 'Failed to fetch photo', err.status);
+        const msg = err.error?.error || err.error?.message || 'Failed to fetch photo';
+        this.handleFetchError(msg, err.status);
         this.isLoadingPayload.set(false);
       }
     });
@@ -185,6 +182,8 @@ export class DecryptionComponent {
       this.encryptedPayload.set(errorText);
       this.isExpired.set(false);
     }
+    this.isLoadingPayload.set(false);
+    this.isDecrypting.set(false);
     this.showNotification(`Fetch Failed: ${msg}`, 'error');
   }
 
@@ -202,24 +201,72 @@ export class DecryptionComponent {
   }
 
   initiateDecryption() {
-    if (!this.decryptionKey() || !this.encryptedPayload()) {
-      // Please provide key and payload
+    if (!this.decryptionKey() || !this.securityId()) {
+      this.showNotification('Security ID and Key are required', 'error');
       return;
     }
 
     this.isDecrypting.set(true);
+    this.decryptedOutput.set(null);
+    this.encryptedPayload.set('');
+    this.isExpired.set(false);
 
-    // Simulate decryption process
-    setTimeout(() => {
-      try {
-        // Since the backend returns the actual text (plaintext) when the correct key is provided
-        this.decryptedOutput.set(this.encryptedPayload());
-        this.showQR.set(false); // Reset QR view for new decryption
-      } catch (e) {
-        this.decryptedOutput.set("Error: Invalid Payload or Key");
-      }
-      this.isDecrypting.set(false);
-    }, 1500);
+    if (this.decryptionType() === 'text') {
+      const algoToSend = this.algorithm() === 'Custom Algo' ? this.customAlgorithm() : this.algorithm();
+      this.api.fetchEncryptedPayload(this.securityId(), this.decryptionKey(), algoToSend).subscribe({
+        next: (response: any) => {
+          if (response && typeof response === 'object') {
+            const payload = response.message || response.encrypted_data || JSON.stringify(response);
+            this.decryptedOutput.set(payload);
+            this.expiresAt.set(response.expires_at || null);
+            if (response.algoId) {
+              if (this.algorithms.includes(response.algoId) && response.algoId !== 'Custom Algo') {
+                this.algorithm.set(response.algoId);
+              } else {
+                this.algorithm.set('Custom Algo');
+                this.customAlgorithm.set(response.algoId);
+              }
+            }
+            this.showNotification('Decryption Successful', 'success');
+          } else {
+            this.decryptedOutput.set(String(response));
+            this.showNotification('Decryption Successful', 'success');
+          }
+          this.isDecrypting.set(false);
+        },
+        error: (err: any) => {
+          const msg = err.error?.error || err.error?.message || 'Failed to decrypt data';
+          this.handleFetchError(msg, err.status);
+          this.isDecrypting.set(false);
+        }
+      });
+    } else {
+      this.api.fetchEncryptedPhoto(this.securityId(), this.decryptionKey()).subscribe({
+        next: (response: any) => {
+          let url = '';
+          if (typeof response === 'string') {
+            url = response;
+          } else if (response && typeof response === 'object') {
+            url = response.image || response.photo || response.url || response.src || response.file || '';
+            this.expiresAt.set(response.expires_at || null);
+          }
+
+          if (url) {
+            this.photoUrl.set(url);
+            this.decryptedOutput.set('Photo decrypted successfully.');
+            this.showNotification('Photo Decrypted Successfully', 'success');
+          } else {
+            this.handleFetchError('No valid photo URL found in response');
+          }
+          this.isDecrypting.set(false);
+        },
+        error: (err) => {
+          const msg = err.error?.error || err.error?.message || 'Failed to fetch photo';
+          this.handleFetchError(msg, err.status);
+          this.isDecrypting.set(false);
+        }
+      });
+    }
   }
 
   showToast = signal(false);
