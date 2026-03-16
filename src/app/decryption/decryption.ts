@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -7,10 +7,12 @@ import { InputComponent } from '../shared/components/input/input.component';
 import { ButtonComponent } from '../shared/components/button/button.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { SelectComponent } from '../shared/components/select/select.component';
+import { QRCodeComponent } from 'angularx-qrcode';
+
 @Component({
   selector: 'app-decryption',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputComponent, ButtonComponent, ToastComponent, SelectComponent],
+  imports: [CommonModule, FormsModule, InputComponent, ButtonComponent, ToastComponent, SelectComponent, QRCodeComponent],
   templateUrl: './decryption.html',
   styleUrl: './decryption.css'
 })
@@ -36,6 +38,19 @@ export class DecryptionComponent {
   isDecrypting = signal(false);
   isLoadingPayload = signal(false);
   decryptedOutput = signal<string | null>(null);
+  showQR = signal(false);
+  
+  constructor() {
+    // Auto-fetch when credentials change
+    effect(() => {
+      const id = this.securityId();
+      const key = this.decryptionKey();
+      if (id && key && key.length >= 2) {
+        this.fetchEncryptedPayload();
+      }
+    });
+  }
+
 
   onCredentialsChange() {
     if (this.securityId() && this.decryptionKey() && this.decryptionKey().length >= 2) {
@@ -187,6 +202,7 @@ export class DecryptionComponent {
       try {
         // Since the backend returns the actual text (plaintext) when the correct key is provided
         this.decryptedOutput.set(this.encryptedPayload());
+        this.showQR.set(false); // Reset QR view for new decryption
       } catch (e) {
         this.decryptedOutput.set("Error: Invalid Payload or Key");
       }

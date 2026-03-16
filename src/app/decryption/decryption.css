@@ -502,3 +502,60 @@ select:focus {
     color: #94a3b8;
     background: rgba(30, 41, 59, 0.5);
 }
+
+/* Decrypted Result Styles */
+.result-section {
+    margin-top: 2rem;
+}
+
+.decrypted-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2.5rem;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 12px;
+    background: rgba(16, 185, 129, 0.03);
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.qr-wrapper {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.decrypted-text-container {
+    width: 100%;
+    text-align: center;
+}
+
+.decrypted-text {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #10b981;
+    word-break: break-all;
+    font-family: 'JetBrains Mono', 'Monaco', monospace;
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+    font-weight: 500;
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
+.quote-icon {
+    position: absolute;
+    top: -15px;
+    left: -25px;
+    opacity: 0.2;
+}
+
+.qr-btn {
+    transition: all 0.2s;
+}
+
+.qr-btn:hover {
+    opacity: 0.8;
+    transform: translateY(-1px);
+}
