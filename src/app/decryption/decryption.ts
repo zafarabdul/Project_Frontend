@@ -40,6 +40,8 @@ export class DecryptionComponent {
   decryptedOutput = signal<string | null>(null);
   showQR = signal(false);
   expiresAt = signal<string | null>(null);
+  isExpired = signal(false);
+
   
   constructor() {
     // Auto-fetch when credentials change
@@ -66,6 +68,7 @@ export class DecryptionComponent {
     this.isLoadingPayload.set(true);
     this.encryptedPayload.set(''); // Reset
     this.photoUrl.set(null); // Reset photo
+    this.isExpired.set(false); // Reset expired state
 
     if (this.timeout) {
       clearTimeout(this.timeout);
@@ -174,8 +177,14 @@ export class DecryptionComponent {
   }
 
   handleFetchError(msg: string, status?: any) {
-    const errorText = `Error: ${msg} ${status ? '(Status: ' + status + ')' : ''}`;
-    this.encryptedPayload.set(errorText);
+    if (msg === 'This content has expired and was automatically deleted.') {
+      this.isExpired.set(true);
+      this.encryptedPayload.set('Content Expired');
+    } else {
+      const errorText = `Error: ${msg} ${status ? '(Status: ' + status + ')' : ''}`;
+      this.encryptedPayload.set(errorText);
+      this.isExpired.set(false);
+    }
     this.showNotification(`Fetch Failed: ${msg}`, 'error');
   }
 

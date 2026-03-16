@@ -243,6 +243,12 @@ textarea:focus {
     box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
 }
 
+.expired-text {
+    color: #f97316 !important;
+    text-shadow: 0 0 10px rgba(249, 115, 22, 0.3);
+    font-weight: 700;
+}
+
 textarea::placeholder {
     color: #334155;
 }
