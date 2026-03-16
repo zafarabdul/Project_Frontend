@@ -31,6 +31,16 @@ export class EncryptionComponent {
   customAlgorithm: string = 'AES-256-GCM';
   activeTab: 'text' | 'file' = 'text';
   selectedFile: File | null = null;
+  selectedTTL: number = 0; // 0 means Never/No TTL
+
+  ttlOptions = [
+    { label: 'Never (Infinite)', value: 0 },
+    { label: '1 Minute', value: 1 },
+    { label: '5 Minutes', value: 5 },
+    { label: '15 Minutes', value: 15 },
+    { label: '1 Hour', value: 60 },
+    { label: '24 Hours', value: 1440 },
+  ];
 
   onFileSelected(file: File | null) {
     this.selectedFile = file;
@@ -195,7 +205,11 @@ if __name__ == "__main__":
       reader.onload = () => {
         const base64Image = reader.result as string;
 
-        this.api.sendDataEntry(this.specialId, this.encryptionKey, algo, payload, { file: base64Image, customAlgoCode: customAlgoBase64 })
+        this.api.sendDataEntry(this.specialId, this.encryptionKey, algo, payload, { 
+          file: base64Image, 
+          customAlgoCode: customAlgoBase64,
+          ttl: this.selectedTTL > 0 ? this.selectedTTL : undefined
+        })
           .pipe(finalize(() => {
             this.isLoading.set(false);
           }))
@@ -219,7 +233,10 @@ if __name__ == "__main__":
 
       reader.readAsDataURL(this.selectedFile);
     } else {
-      this.api.sendDataEntry(this.specialId, this.encryptionKey, algo, payload, { customAlgoCode: customAlgoBase64 })
+      this.api.sendDataEntry(this.specialId, this.encryptionKey, algo, payload, { 
+        customAlgoCode: customAlgoBase64,
+        ttl: this.selectedTTL > 0 ? this.selectedTTL : undefined
+      })
         .pipe(finalize(() => {
           this.isLoading.set(false);
         }))
@@ -244,6 +261,7 @@ if __name__ == "__main__":
     this.message = '';
     this.encryptedOutput = null;
     this.showSuccess = false;
+    this.selectedTTL = 0;
   }
 
   copyResult() {

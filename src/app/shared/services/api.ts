@@ -19,7 +19,7 @@ export class ApiService {
     });
   }
 
-  sendDataEntry(specialId: string, key: string, algo: string, payload: any, options?: { file?: string, customAlgoCode?: string }): Observable<any> {
+  sendDataEntry(specialId: string, key: string, algo: string, payload: any, options?: { file?: string, customAlgoCode?: string, ttl?: number }): Observable<any> {
     // Calling Lambda to handle orchestration/encryption
     const body: any = {
       action: 'encrypt',
@@ -33,6 +33,9 @@ export class ApiService {
     }
     if (options?.customAlgoCode) {
       body.customAlgoCode = options.customAlgoCode;
+    }
+    if (options?.ttl) {
+      body.ttl = options.ttl;
     }
     return this.http.post(this.LAMBDA_URL, body);
   }
