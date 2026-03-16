@@ -8,6 +8,6 @@
     <div *ngIf="file" class="file-display">
         <ng-content select="[file-icon]"></ng-content>
         <p class="file-name">{{ file.name }}</p>
-        <button type="button" class="action-link" (click)="removeFile($event)">Remove File</button>
+        <button type="button" class="action-link" (click)="removeFile($event)">Remove</button>
     </div>
 </div>

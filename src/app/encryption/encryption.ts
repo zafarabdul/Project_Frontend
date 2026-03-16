@@ -196,7 +196,7 @@ if __name__ == "__main__":
 
     if (this.activeTab === 'file') {
       if (!this.selectedFile) {
-        this.showError('Please select a file to encrypt.');
+        this.showError('Please select a photo to encrypt.');
         this.isLoading.set(false);
         return;
       }
@@ -216,12 +216,12 @@ if __name__ == "__main__":
           .subscribe({
             next: (response: any) => {
               this.showSuccess = true;
-              this.encryptedOutput = `File "${this.selectedFile?.name}" encrypted successfully.`;
-              this.showNotification('File Encrypted Successfully', 'success');
+              this.encryptedOutput = `Photo "${this.selectedFile?.name}" encrypted successfully.`;
+              this.showNotification('Photo Encrypted Successfully', 'success');
             },
             error: (err: any) => {
-              console.error('File Encryption failed', err);
-              this.showError('File encryption failed. Check console.');
+              console.error('Photo Encryption failed', err);
+              this.showError('Photo encryption failed. Check console.');
             }
           });
       };

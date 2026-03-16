@@ -111,15 +111,16 @@
                 <button class="tab" [class.active]="activeTab === 'file'" (click)="activeTab = 'file'">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
-                        <polyline points="13 2 13 9 20 9"></polyline>
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
                     </svg>
-                    File Upload
+                    Photo Upload
                 </button>
             </div>
 
             <div class="form-group" style="flex: 1; display: flex; flex-direction: column;">
-                <label>{{ activeTab === 'text' ? 'Raw Message' : 'File Selection' }}</label>
+                <label>{{ activeTab === 'text' ? 'Raw Message' : 'Photo Selection' }}</label>
 
                 <!-- Text Area -->
                 <ng-container *ngIf="activeTab === 'text'">
@@ -130,8 +131,8 @@
 
                 <!-- File Upload Area -->
                 <ng-container *ngIf="activeTab === 'file'">
-                    <app-file-upload [file]="selectedFile" label="Initiate Data Uplink"
-                        subtext="Drop encrypted payload or select local file for secure transmission."
+                    <app-file-upload [file]="selectedFile" label="Initiate Photo Uplink"
+                        subtext="Drop encrypted payload or select local photo for secure transmission."
                         (fileSelected)="onFileSelected($event)">
                         <svg upload-icon xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
                             fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
@@ -143,8 +144,9 @@
                         <svg file-icon xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
                             fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round"
                             stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
                         </svg>
                     </app-file-upload>
                 </ng-container>
@@ -279,7 +281,7 @@
             </div>
 
             <div *ngIf="customAlgoTab === 'upload'" style="display: flex; flex-direction: column; flex: 1;">
-                <app-file-upload [file]="customCodeFile" label="Select Algorithm File" subtext=".py, .js, .txt etc"
+                <app-file-upload [file]="customCodeFile" label="Select Algorithm Code" subtext=".py, .js, .txt etc"
                     (fileSelected)="onCustomAlgoFileSelected($event)" padding="7.75rem 1.5rem" style="flex: 1;">
                     <svg upload-icon xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
                         fill="none" stroke="#0ea5e9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -295,7 +297,7 @@
                 </app-file-upload>
                 <button class="btn btn-secondary"
                     style="width: 100%; padding: 0.75rem; font-weight: 600; margin-top: auto;"
-                    (click)="showCustomAlgoDialog = false" [disabled]="!customCodeFile">Save Selected File</button>
+                    (click)="showCustomAlgoDialog = false" [disabled]="!customCodeFile">Save Selected Algorithm</button>
             </div>
         </div>
     </div>
