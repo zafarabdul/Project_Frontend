@@ -26,9 +26,9 @@ export class EncryptionComponent {
   // Form Model
   specialId: string = '1234560000';
   encryptionKey: string = '1234';
-  algorithm: string = 'AES-256-GCM';
+  algorithm: string = 'Triple DES';
   message: string = '';
-  customAlgorithm: string = 'AES-256-GCM';
+  customAlgorithm: string = 'Triple DES';
   activeTab: 'text' | 'file' = 'text';
   selectedFile: File | null = null;
   selectedTTL: number = 0; // 0 means Never/No TTL
@@ -59,6 +59,7 @@ export class EncryptionComponent {
 
   // Options
   algorithms = [
+    'Triple DES',
     'AES-256-GCM',
     'ChaCha20-Poly1305',
     'Blowfish',

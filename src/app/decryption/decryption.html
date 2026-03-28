@@ -79,7 +79,7 @@
             </div>
 
             <ng-container *ngIf="decryptionType() === 'text'">
-                <app-select label="DECRYPTION ALGORITHM" [options]="algorithms" recommendedOption="AES-256-GCM"
+                <app-select label="DECRYPTION ALGORITHM" [options]="algorithms"
                     [ngModel]="algorithm()" (ngModelChange)="algorithm.set($event)"></app-select>
 
                 <app-input *ngIf="algorithm() === 'Custom Algo'" label="Custom Algorithm Name"
@@ -179,7 +179,7 @@
 
         <div class="console-footer">
             <div class="footer-item">
-                <span class="indicator"></span> AES-256 GCM
+                <span class="indicator"></span> Triple DES
             </div>
             <div class="footer-item">
                 <span class="indicator-time"></span> 12ms Latency

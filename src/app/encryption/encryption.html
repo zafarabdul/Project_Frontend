@@ -71,7 +71,7 @@
             </div>
 
             <ng-container *ngIf="activeTab === 'text'">
-                <app-select label="Algorithm" [options]="algorithms" recommendedOption="AES-256-GCM"
+                <app-select label="Algorithm" [options]="algorithms"
                     [ngModel]="algorithm" (ngModelChange)="onAlgorithmChange($event)"></app-select>
 
                 <div *ngIf="algorithm === 'Custom Algo'">

@@ -21,13 +21,14 @@ export class DecryptionComponent {
 
   securityId = signal('1234560000');
   decryptionKey = signal('1234');
-  algorithm = signal('AES-256-GCM');
+  algorithm = signal('Triple DES');
   encryptedPayload = signal('');
   customAlgorithm = signal('');
   decryptionType = signal<'text' | 'image'>('text');
 
   // Options
   algorithms = [
+    'Triple DES',
     'AES-256-GCM',
     'ChaCha20-Poly1305',
     'Blowfish',
